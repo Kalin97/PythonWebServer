@@ -16,6 +16,7 @@ class HttpConnection:
 		return self.address
 
 	def getData(self):
+		plainData = ""
 		try:
 			plainData = self.connection.recv(self.bufsize)
 		except socket.error:
@@ -33,3 +34,6 @@ class HttpConnection:
 
 	def close(self):
 		self.connection.close()
+
+	def __del__(self):
+		if self.connection: self.close()
