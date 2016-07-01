@@ -26,7 +26,7 @@ class AddOperation:
 
 	def execute(self, httpObject):
 		params = httpObject.getParams()
-
+		
 		try:
 			return str(int(params["first"]) + int(params["second"]))
 		except:

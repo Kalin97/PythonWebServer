@@ -1,5 +1,6 @@
 import socket
 import httpObject
+import re
 
 class HttpConnectionReceiveException:
 	pass
@@ -18,7 +19,18 @@ class HttpConnection:
 	def getData(self):
 		plainData = ""
 		try:
-			plainData = self.connection.recv(self.bufsize)
+			while "\r\n\r\n" not in plainData:
+				data = self.connection.recv(self.bufsize)
+				plainData += data
+
+			request = httpObject.HttpObject(plainData)
+
+			if not request.requestRecieved():
+				data = self.connection.recv(self.bufsize)
+				plainData += data
+			else:
+				return request
+
 		except socket.error:
 			raise HttpConnectionReceiveException("Wans't able to receive data!")
 

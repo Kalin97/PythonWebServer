@@ -41,7 +41,11 @@ class HttpServer:
 
 	def httpSession(self, httpConnection):
 		httpObject = httpConnection.getData()
-		response = self.handler.handleHttpRequest(httpObject)
+		if httpObject.valid():
+			response = self.handler.handleHttpRequest(httpObject)
+		else:
+			response = "Something went wrong"
+
 		httpObject.setBody(response)
 		httpConnection.sendData(httpObject)
 		httpConnection.close()
