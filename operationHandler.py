@@ -61,7 +61,7 @@ class SendFileOperation:
 				fileContent += byte
 				byte = file.read(1)
 			
-			httpObject.setField("Content-Type", self.getFileContentType(filePath))
+		httpObject.setField("Content-Type", self.getFileContentType(filePath))
 
 		return fileContent
 

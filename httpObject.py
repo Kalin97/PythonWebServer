@@ -3,10 +3,10 @@ class HttpObjectParseException:
 
 class HttpObject:
 	def __init__(self, plainData):
-		# try:
-		HttpObject.parseHttpRequest(self, plainData)
-		# except:
-		# 	raise HttpObjectParseException("Parsing error")
+		try:
+			HttpObject.parseHttpRequest(self, plainData)
+		except:
+			raise HttpObjectParseException("Parsing error")
 
 		self.setField("Content-Type", "text/plain")
 
@@ -34,8 +34,7 @@ Content-Length: {1}\r\n\r\n""".format(contentType, contentLength)
 	@staticmethod
 	def parseHttpRequest(httpObject, plainData):
 		header = plainData.split('\r\n\r\n', 1)[0]
-		# requestBody = plainData.split('\n\n', 1)[1]
-		fields = header.split('\n')
+		fields = header.split('\r\n')
 		firstLine = fields[0].split(' ')
 		methodType = firstLine[0]
 		fields.pop(0) 
