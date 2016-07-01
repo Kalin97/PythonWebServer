@@ -1,3 +1,4 @@
+import authentication
 import socket
 import httpObject
 import re
@@ -19,22 +20,31 @@ class HttpConnection:
 	def getData(self):
 		plainData = ""
 		try:
-			while "\r\n\r\n" not in plainData:
-				data = self.connection.recv(self.bufsize)
-				plainData += data
+			plainData = self.receiveHeader()
 
 			request = httpObject.HttpObject(plainData)
 
 			if not request.requestRecieved():
 				data = self.connection.recv(self.bufsize)
 				plainData += data
-			else:
-				return request
+
+			auth = authentication.Authentication(request)
+			if auth.isGuest():
+				return httpObject.HttpObject.httpObjectWithCode(401, False, "Access Denied")
 
 		except socket.error:
 			raise HttpConnectionReceiveException("Wans't able to receive data!")
 
+
 		return httpObject.HttpObject(plainData)
+
+	def receiveHeader(self):
+		plainData = ""
+		while "\r\n\r\n" not in plainData:
+			data = self.connection.recv(self.bufsize)
+			plainData += data
+
+		return plainData
 
 	def sendData(self, httpObjectArg):
 		plainData = httpObjectArg.getResponse()

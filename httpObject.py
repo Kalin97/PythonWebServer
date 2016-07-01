@@ -2,13 +2,24 @@ class HttpObjectParseException:
 	pass
 
 class HttpObject:
-	def __init__(self, plainData):
-		try:
-			HttpObject.parseHttpRequest(self, plainData)
-		except:
-			raise HttpObjectParseException("Parsing error")
+	def __init__(self, plainData = ""):
+		self.valid = True
+		self.methodType = ""
+		self.params = {}
+		self.httpVersion = "HTTP/1.0"
+		self.headerFields = {}
+		self.requestPath = ""
+		self.message = "OK"
+		self.code = 200 
 
 		self.setField("Content-Type", "text/plain")
+		
+		if not plainData == "":
+			try:
+				HttpObject.parseHttpRequest(self, plainData)
+			except:
+				raise HttpObjectParseException("Parsing error")
+
 
 	def getParams(self):
 		return self.params
@@ -25,8 +36,8 @@ class HttpObject:
 	def setField(self, key, value):
 		self.headerFields[key] = value
 
-	def valid(self):
-		return True
+	def IsValid(self):
+		return self.valid
 
 	def requestRecieved(self):
 		contentLength = self.getHeaderField("Content-Length")
@@ -42,12 +53,19 @@ class HttpObject:
 		return None
 
 	def getResponse(self):
-		contentType = self.headerFields["Content-Type"]
-		contentLength = len(self.body)
+		code = self.code
+		httpVersion = self.httpVersion
+		message = self.message
 
-		request = """HTTP/1.0 200 OK
-Content-Type: {0}
-Content-Length: {1}\r\n\r\n""".format(contentType, contentLength)
+		if self.IsValid():
+			contentType = self.headerFields["Content-Type"]
+			contentLength = len(self.body)
+	
+			request = """{0} {1} {2}
+Content-Type: {3}
+Content-Length: {4}\r\n\r\n""".format(httpVersion, code, message, contentType, contentLength)
+		else:
+			request = "{0} {1} {2}".format(httpVersion, code, message)
 
 		return request + self.body
 
@@ -77,8 +95,18 @@ Content-Length: {1}\r\n\r\n""".format(contentType, contentLength)
 		httpObject.httpVersion = firstLine[2]
 		httpObject.headerFields = HttpObject.parseFields(fields)
 		httpObject.requestPath = fullPath
+		httpObject.code = 200 
 
 		return httpObject
+
+	@staticmethod
+	def httpObjectWithCode(code, valid = True, message = "OK"):
+		http = HttpObject()
+		http.code = code
+		http.valid = valid
+		http.message = message
+
+		return http
 
 	@staticmethod
 	def parseParams(plainParams):
