@@ -6,7 +6,7 @@ class HttpObject:
 		self.valid = True
 		self.methodType = ""
 		self.params = {}
-		self.httpVersion = "HTTP/1.0"
+		self.httpVersion = "HTTP/1.1"
 		self.headerFields = {}
 		self.requestPath = ""
 		self.message = "OK"
@@ -96,6 +96,12 @@ Content-Length: {4}\r\n\r\n""".format(httpVersion, code, message, contentType, c
 		httpObject.headerFields = HttpObject.parseFields(fields)
 		httpObject.requestPath = fullPath
 		httpObject.code = 200 
+
+		# host header required
+		if httpObject.httpVersion == "HTTP/1.1" and not httpObject.getHeaderField("Host"):
+			httpObject.code = 400
+			httpObject.valid = False
+			httpObject.message = "Bad Request"
 
 		return httpObject
 

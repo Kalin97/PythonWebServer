@@ -29,9 +29,9 @@ class HttpConnection:
 				data = self.connection.recv(self.bufsize)
 				plainData += data
 
-			auth = authentication.Authentication(request)
-			if auth.isGuest():
-				return httpObject.HttpObject.httpObjectWithCode(401, False, "Access Denied")
+			# auth = authentication.Authentication(request)
+			# if auth.isGuest():
+			# 	return httpObject.HttpObject.httpObjectWithCode(401, False, "Access Denied")
 
 		except socket.error:
 			raise HttpConnectionReceiveException("Wans't able to receive data!")
