@@ -4,6 +4,7 @@ import httpObject
 import operationHandler
 import threading
 import os
+import sys
 
 class HttpSocketCreateException:
 	pass
@@ -28,15 +29,15 @@ class HttpServer:
 			conn, addr = self.socket.accept()
 			connection = httpConnection.HttpConnection(conn, addr)
 
-			# fork
 			# newpid = os.fork()
 			# if newpid == 0:
 			# 	self.httpSession(connection)
+			# 	sys.exit()
 
 			thread = threading.Thread(target = self.httpSession, args = (connection, ))
 			thread.setDaemon(True)
 			thread.start()
-		except:
+		except socket.error:
 			raise HttpSocketAcceptException("Wasn't able to accept connection!")
 
 	def httpSession(self, httpConnection):

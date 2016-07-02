@@ -20,6 +20,7 @@ class HttpConnection:
 	def getData(self):
 		plainData = ""
 		try:
+			# plainData = self.connection.recv(self.bufsize)
 			plainData = self.receiveHeader()
 
 			request = httpObject.HttpObject(plainData)

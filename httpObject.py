@@ -11,8 +11,6 @@ class HttpObject:
 		self.requestPath = ""
 		self.message = "OK"
 		self.code = 200 
-
-		self.setField("Content-Type", "text/plain")
 		
 		if not plainData == "":
 			try:
@@ -20,7 +18,9 @@ class HttpObject:
 			except:
 				raise HttpObjectParseException("Parsing error")
 
-
+		if not self.getHeaderField("Content-Type"):
+			self.setField("Content-Type", "text/plain")
+	
 	def getParams(self):
 		return self.params
 
@@ -47,7 +47,7 @@ class HttpObject:
 		return contentLength == None or int(contentLength) == 0 or methodType is not "POST" or bodySended
 
 	def getHeaderField(self, key):
-		if key in self.headerFields.keys():
+		if key in self.headerFields:
 			return self.headerFields[key]
 
 		return None

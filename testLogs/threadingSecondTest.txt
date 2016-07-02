@@ -1,0 +1,20 @@
+This is ApacheBench, Version 2.3 <$Revision: 1528965 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+
+
+Server Software:        
+Server Hostname:        localhost
+Server Port:            50007
+
+Document Path:          /?first=5&second=8
+Document Length:        0 bytes
+
+Concurrency Level:      1000
+Time taken for tests:   0.589 seconds
+Complete requests:      0
+Failed requests:        0
+Total transferred:      0 bytes
+HTML transferred:       0 bytes
