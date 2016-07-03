@@ -16,6 +16,7 @@ class HttpServer:
 		self.handler = operationHandler.OperationHandler(rootDirectory)
 		try:
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			self.socket.bind((hostname, port))
 			self.socket.listen(maxQuerySize)
 		except socket.error:
@@ -29,20 +30,24 @@ class HttpServer:
 			conn, addr = self.socket.accept()
 			connection = httpConnection.HttpConnection(conn, addr)
 
-			# newpid = os.fork()
-			# if newpid == 0:
-			# 	self.httpSession(connection)
-			# 	sys.exit()
-
-			thread = threading.Thread(target = self.httpSession, args = (connection, ))
-			thread.setDaemon(True)
-			thread.start()
+			# self.processConnection(connection)
+			self.threadConnection(connection)
 		except socket.error:
 			raise HttpSocketAcceptException("Wasn't able to accept connection!")
 
+	def threadConnection(self, connection):
+		thread = threading.Thread(target = self.httpSession, args = (connection, ))
+		thread.setDaemon(True)
+		thread.start()
+
+	def processConnection(self, connection):
+		newpid = os.fork()
+		if newpid == 0:
+			self.httpSession(connection)
+			sys.exit()
+
 	def httpSession(self, httpConnection):
 		httpObject = httpConnection.getData()
-
 		response = ""
 		if httpObject.IsValid():
 			response = self.handler.handleHttpRequest(httpObject)
