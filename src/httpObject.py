@@ -48,8 +48,8 @@ class HttpObject:
 			return True
 
 		methodType = self.getMethodType()
-		bodySended = contentLength == bodyLength
-		return int(contentLength) == 0 or methodType not in "POST" or bodySended
+		bodySended = int(contentLength) == bodyLength
+		return methodType not in "POST" or bodySended
 
 	def getHeaderField(self, key):
 		if key in self.headerFields:

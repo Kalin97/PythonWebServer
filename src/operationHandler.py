@@ -30,7 +30,8 @@ class AddOperation:
 
 	def execute(self, httpObject):
 		params = httpObject.getParams()
-		
+		httpObject.setField("Content-Type", "text/plain")
+
 		try:
 			return str(int(params["first"]) + int(params["second"]))
 		except:
@@ -48,21 +49,31 @@ class RegisterOperation:
 	PASSWORD = "kalin97"
 	DATABASE = "web_server"
 
+	USERNAME_FIELD = "username"
+	PASSWORD_FIELD = "password"
+
 	def saveUserToDatabase(self, username, password):
-		db = _mysql.connect(self.HOST, self.USERNAME, self.PASSWORD, self.DATABASE)
-	#	try:
-		db.query("INSERT INTO User(username, password) VALUES ('{}', '{}')".format(username, password))
-	#	except _mysql.MySQLError:
-#			raise self.RegisterOperationQueryError("Failed query")
-       
-        def canExecute(self, httpObject):
-		return httpObject.getRequestPath() == "/register/"
+		conn = _mysql.connect(self.HOST, self.USERNAME, self.PASSWORD, self.DATABASE)
+		try:
+			conn.query("INSERT INTO User({}, {}) VALUES ('{}', '{}')".format(self.USERNAME_FIELD, self.PASSWORD_FIELD, username, password))
+		except _mysql.MySQLError:
+			raise self.RegisterOperationQueryError("Failed query")
+       		finally:
+			if conn:
+				conn.close()
+		 
+	def canExecute(self, httpObject):
+		return httpObject.getRequestPath() in "/register/"
 
         def execute(self, httpObject):
-		self.saveUserToDatabase("TestingUsername", "TestingPassword")
-                httpObject.setField("Content-Type", "text/plain")
+		params = httpObject.getParams()
+		httpObject.setField("Content-Type", "text/plain")
 
-		return "Successfuly registered"
+		if self.USERNAME_FIELD in params and self.PASSWORD_FIELD in params:
+			self.saveUserToDatabase(params[self.USERNAME_FIELD], params[self.PASSWORD_FIELD])
+			return "Successfuly registered"
+		else:
+			return "Unvalid data"
 
 
 class UploadFileOperation:

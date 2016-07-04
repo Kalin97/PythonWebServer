@@ -23,7 +23,6 @@ class HttpConnection:
 		plainData = ""
 		try:
 			plainData = self.receiveHeader()
-
 			request = httpObject.HttpObject(plainData)
 
 			if not request.requestRecieved(plainData):
@@ -36,7 +35,6 @@ class HttpConnection:
 
 		except socket.error:
 			raise HttpConnectionReceiveException("Wans't able to receive data!")
-
 
 		return httpObject.HttpObject(plainData)
 
