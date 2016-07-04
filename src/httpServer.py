@@ -7,12 +7,15 @@ import os
 import sys
 
 class HttpSocketCreateException:
-	pass
+	def __init__(self, message):
+		pass	
 class HttpSocketAcceptException:
-	pass
+	def __init__(self, message):
+		pass
 
 class HttpServer:
 	def __init__(self, hostname, port, rootDirectory, maxQuerySize = 5):
+		self.acceptedConnections = 0
 		self.handler = operationHandler.OperationHandler(rootDirectory)
 		try:
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +26,9 @@ class HttpServer:
 			raise HttpSocketCreateException("Wasn't able to create socket!")
 
 	def run(self):
-		while True: self.accept()
+		while True: 
+			self.accept()
+			self.acceptedConnections += 1
 
 	def accept(self):
 		try:
@@ -57,4 +62,5 @@ class HttpServer:
 		httpConnection.close()
 
 	def __del__(self):
+		print "Accepted connections " + str(self.acceptedConnections)
 		if self.socket:	self.socket.close()

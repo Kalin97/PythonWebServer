@@ -1,11 +1,13 @@
 class HttpObjectParseException:
-	pass
+	def __init__(self, message):
+		pass	
 
 class HttpObject:
 	def __init__(self, plainData = ""):
 		self.valid = True
 		self.methodType = ""
 		self.params = {}
+		self.body = plainData.split("\r\n\r\n", 1)[1] 
 		self.httpVersion = "HTTP/1.1"
 		self.headerFields = {}
 		self.requestPath = ""
@@ -39,12 +41,15 @@ class HttpObject:
 	def IsValid(self):
 		return self.valid
 
-	def requestRecieved(self):
+	def requestRecieved(self, requestPlain):
+		bodyLength = len(requestPlain.split("\r\n\r\n", 1)[1])
 		contentLength = self.getHeaderField("Content-Length")
-		methodType = self.getMethodType()
-		bodySended = len(self.params) == 0
+		if contentLength == None:
+			return True
 
-		return contentLength == None or int(contentLength) == 0 or methodType is not "POST" or bodySended
+		methodType = self.getMethodType()
+		bodySended = contentLength == bodyLength
+		return int(contentLength) == 0 or methodType not in "POST" or bodySended
 
 	def getHeaderField(self, key):
 		if key in self.headerFields:

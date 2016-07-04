@@ -4,9 +4,11 @@ import httpObject
 import re
 
 class HttpConnectionReceiveException:
-	pass
+	def __init__(self, message):
+		pass
 class HttpConnectionSendException:
-	pass
+	def __init__(self, message):
+		pass
 
 class HttpConnection:
 	def __init__(self, connection, address, bufsize = 1024):
@@ -24,7 +26,7 @@ class HttpConnection:
 
 			request = httpObject.HttpObject(plainData)
 
-			if not request.requestRecieved():
+			if not request.requestRecieved(plainData):
 				data = self.connection.recv(self.bufsize)
 				plainData += data
 
@@ -52,7 +54,7 @@ class HttpConnection:
 		try:
 			self.connection.sendall(plainData)
 		except:
-			raise HttpConnectionSendException
+			raise HttpConnectionSendException("Wasn't able to send data")
 
 	def close(self):
 		self.connection.close()
